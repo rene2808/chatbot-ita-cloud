@@ -81,9 +81,6 @@ def get_response():
     mensaje_original = request.json.get("message", "")
     user_msg = limpiar_texto(mensaje_original)
     
-    # Contar palabras para el enrutamiento de intención
-    num_palabras = len(mensaje_original.strip().split())
-    
     # 🌟 Manejar cortesías al instante para ahorrar procesamiento y sonar natural
     cortesias = {
         "hola": "¡Hola! Soy tu asistente virtual del ITA. ¿Sobre qué trámite escolar tienes alguna duda hoy?",
@@ -104,17 +101,14 @@ def get_response():
     for item in base_conocimiento:
         mejor_score = 0
         for clave in item["claves_busqueda"]:
+            # Usamos token_set_ratio ya que es sumamente potente para intenciones desordenadas
             score = fuzz.token_set_ratio(user_msg, clave)
             
-            # --- MÉTODO DE ENRUTAMIENTO POR LONGITUD ---
-            # Si es 1 o 2 palabras, priorizamos masivamente la respuesta GENERAL
-            if item["es_general"] and num_palabras <= 2:
-                score += 35
-            
-            # Si son más de 2 palabras, le damos un empuje a lo ESPECÍFICO
-            if not item["es_general"] and num_palabras > 2:
+            # --- AJUSTE DE PRECISIÓN PARA DESEMPATAR ---
+            # Si el usuario menciona la categoría específica, damos prioridad real
+            if limpiar_texto(item["categoria"]) in user_msg:
                 score += 10
-                
+            
             if score > mejor_score:
                 mejor_score = score
         
@@ -128,7 +122,7 @@ def get_response():
     
     # Umbral de confianza mínimo
     umbral_minimo = 55
-    margin = 5  # Margen de tolerancia para detectar ambigüedad
+    margin = 2  # Reducimos el margen para evitar ambigüedades innecesarias
     
     if not candidatos or candidatos[0]["score"] < umbral_minimo:
         # 📝 REGISTRO DE ANALÍTICA (Azure logs)
@@ -136,22 +130,24 @@ def get_response():
         
         return jsonify({"response": "No estoy seguro de entender tu duda. ¿Te refieres a inscripciones, residencias, servicio social o algún trámite escolar?"})
 
-    # Seleccionado inicial
+    # 🌟 LÓGICA DE DECISIÓN CRÍTICA
     seleccionado = candidatos[0]
+    
+    # Si detectamos que el usuario escribió el nombre de la categoría, lo forzamos
+    for cand in candidatos[:5]:
+        if limpiar_texto(cand["item"]["categoria"]) in user_msg and cand["score"] > 70:
+            seleccionado = cand
+            break
 
     # 🌟 LÓGICA DE DESAMBIGUACIÓN (Ties Detection)
-    # Comparamos si el puntaje máximo tiene empates cercanos con otras categorías distintas
     max_score = seleccionado["score"]
-    
-    # Filtrar candidatos cercanos al puntaje máximo que pertenezcan a alta confianza (>= 70)
     empates = [c for c in candidatos if c["score"] >= max_score - margin and c["score"] >= 70]
-    
-    # Agrupar las categorías únicas de los empates
     categorias_candidatas = list(set(c["item"]["categoria"] for c in empates))
     
-    # Solo mostramos ambigüedad si el usuario fue descriptivo (>2 palabras) 
-    # para evitar que los botones generales disparen este mensaje.
-    if len(categorias_candidatas) > 1 and num_palabras > 2:
+    # Solo disparamos ambigüedad si realmente no hay una categoría clara mencionada
+    menciona_categoria = any(limpiar_texto(cat) in user_msg for cat in categorias_candidatas)
+
+    if len(categorias_candidatas) > 1 and not menciona_categoria:
         opciones = ", ".join(f"**{cat.title()}**" for cat in categorias_candidatas)
         respuesta = (
             f"Encontré información que coincide con tu duda en varias secciones: {opciones}. "
@@ -159,7 +155,6 @@ def get_response():
             f"Por ejemplo, puedes intentar preguntar sobre '{empates[0]['item']['categoria']} {empates[0]['item']['subcategoria']}'."
         )
     else:
-        # No hay ambigüedad o es una sola categoría, tomamos el mejor resultado
         respuesta = seleccionado["item"]["respuesta"]
 
     return jsonify({"response": respuesta})
