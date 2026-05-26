@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Asistente Virtual ITA - Cloud Service</title>
     <!-- Cargamos Google Fonts Outfit -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -13,13 +13,19 @@
             --primary: #002855; /* Azul marino institucional */
             --primary-hover: #001835;
             --primary-gradient: linear-gradient(135deg, #0b2f61 0%, #001835 100%);
-            --background-gradient: linear-gradient(135deg, #020617 0%, #08162b 50%, #0f1d33 100%);
-            --chat-bg: rgba(10, 22, 41, 0.85); /* Translúcido azul marino */
+            --background-gradient: linear-gradient(135deg, #020617 0%, #061224 50%, #0b1a30 100%);
+            --chat-bg: rgba(10, 22, 41, 0.9); /* Translúcido azul marino profundo */
             --border-color: rgba(212, 175, 55, 0.25); /* Dorado translúcido */
             --text-light: #f8fafc;
             --text-muted: #94a3b8;
             --gold-accent: #d4af37; /* Oro institucional */
             --gold-gradient: linear-gradient(135deg, #f59e0b 0%, #d4af37 100%);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
         }
 
         body {
@@ -29,6 +35,7 @@
             justify-content: center;
             align-items: center;
             height: 100vh;
+            height: 100dvh; /* Altura dinámica moderna */
             margin: 0;
             overflow: hidden;
             color: var(--text-light);
@@ -41,7 +48,7 @@
             background: var(--chat-bg);
             backdrop-filter: blur(20px) saturate(180%);
             -webkit-backdrop-filter: blur(20px) saturate(180%);
-            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.4);
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
             display: flex;
             flex-direction: column;
             border-radius: 24px;
@@ -53,13 +60,14 @@
         #header {
             background: var(--primary-gradient);
             color: white;
-            padding: 20px 24px;
+            padding: 16px 20px;
             display: flex;
             align-items: center;
             justify-content: space-between;
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.35);
             z-index: 10;
             border-bottom: 2px solid var(--gold-accent);
+            flex-shrink: 0;
         }
 
         .header-info {
@@ -68,21 +76,21 @@
             gap: 12px;
         }
 
-        .bot-avatar {
+        .bot-logo {
             width: 40px;
             height: 40px;
-            background: rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.08);
             border-radius: 50%;
             display: flex;
             justify-content: center;
             align-items: center;
-            font-size: 20px;
-            border: 1px solid rgba(212, 175, 55, 0.3);
-            box-shadow: 0 0 10px rgba(212, 175, 55, 0.15);
+            border: 1px solid var(--gold-accent);
+            box-shadow: 0 0 10px rgba(212, 175, 55, 0.2);
+            padding: 5px;
         }
 
         .header-title {
-            font-size: 16px;
+            font-size: 15px;
             font-weight: 600;
             letter-spacing: 0.3px;
         }
@@ -91,7 +99,7 @@
             display: flex;
             align-items: center;
             gap: 6px;
-            font-size: 12px;
+            font-size: 11px;
             background: rgba(212, 175, 55, 0.15);
             padding: 4px 10px;
             border-radius: 20px;
@@ -101,11 +109,11 @@
         }
 
         .status-dot {
-            width: 8px;
-            height: 8px;
+            width: 7px;
+            height: 7px;
             background-color: #10b981;
             border-radius: 50%;
-            box-shadow: 0 0 10px #10b981;
+            box-shadow: 0 0 8px #10b981;
             animation: pulse 1.8s infinite;
         }
 
@@ -117,37 +125,37 @@
 
         #messages {
             flex: 1;
-            padding: 24px 20px;
+            padding: 20px;
             overflow-y: auto;
             display: flex;
             flex-direction: column;
-            gap: 16px;
-            background-color: rgba(7, 16, 31, 0.45);
+            gap: 14px;
+            background-color: rgba(7, 16, 31, 0.55);
             scroll-behavior: smooth;
         }
 
         /* Barra de scroll temática dorada */
         #messages::-webkit-scrollbar {
-            width: 5px;
+            width: 4px;
         }
         #messages::-webkit-scrollbar-track {
             background: transparent;
         }
         #messages::-webkit-scrollbar-thumb {
-            background: rgba(212, 175, 55, 0.2);
+            background: rgba(212, 175, 55, 0.25);
             border-radius: 10px;
         }
 
         .msg {
-            padding: 12px 18px;
-            border-radius: 20px;
-            max-width: 80%;
-            font-size: 14px;
-            line-height: 1.5;
+            padding: 10px 16px;
+            border-radius: 18px;
+            max-width: 85%;
+            font-size: 13.5px;
+            line-height: 1.45;
             word-wrap: break-word;
-            animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            animation: slideUp 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
             opacity: 0;
-            transform: translateY(10px);
+            transform: translateY(8px);
         }
 
         @keyframes slideUp {
@@ -160,19 +168,19 @@
         .user {
             align-self: flex-end;
             background: var(--gold-gradient);
-            color: #050c18; /* Azul oscuro para máxima legibilidad sobre dorado */
+            color: #050c18;
             border-bottom-right-radius: 4px;
-            box-shadow: 0 4px 12px rgba(212, 175, 55, 0.25);
+            box-shadow: 0 4px 10px rgba(212, 175, 55, 0.2);
             font-weight: 500;
         }
 
         .bot {
             align-self: flex-start;
-            background: #112240; /* Azul grisáceo oscuro */
+            background: #112240;
             color: var(--text-light);
-            border: 1px solid rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.04);
             border-bottom-left-radius: 4px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
         }
 
         .bot strong {
@@ -185,19 +193,19 @@
             display: flex;
             align-items: center;
             gap: 4px;
-            padding: 12px 20px;
+            padding: 10px 16px;
             background: #112240;
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            border-radius: 18px;
             border-bottom-left-radius: 4px;
             width: fit-content;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-            animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+            animation: slideUp 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
         }
 
         .typing-bubble span {
-            width: 8px;
-            height: 8px;
+            width: 7px;
+            height: 7px;
             background: var(--gold-accent);
             border-radius: 50%;
             display: inline-block;
@@ -215,11 +223,12 @@
 
         /* Chips / Botones rápidos */
         #suggestions-panel {
-            padding: 0 20px 12px 20px;
+            padding: 0 16px 12px 16px;
             display: flex;
             gap: 8px;
             overflow-x: auto;
             background: transparent;
+            flex-shrink: 0;
         }
 
         #suggestions-panel::-webkit-scrollbar {
@@ -230,9 +239,9 @@
             background: #0f1c30;
             color: var(--gold-accent);
             border: 1px solid rgba(212, 175, 55, 0.3);
-            padding: 8px 16px;
+            padding: 6px 12px;
             border-radius: 30px;
-            font-size: 13px;
+            font-size: 12px;
             font-weight: 500;
             cursor: pointer;
             white-space: nowrap;
@@ -251,23 +260,25 @@
         /* Caja de entrada */
         #input-area {
             display: flex;
-            padding: 16px 20px;
+            padding: 12px 16px;
             background: #0b1526;
             border-top: 1px solid rgba(255, 255, 255, 0.05);
             align-items: center;
+            flex-shrink: 0;
         }
 
         #user-input {
             flex: 1;
-            padding: 12px 20px;
+            padding: 10px 16px;
             border: 1px solid rgba(255, 255, 255, 0.1);
             border-radius: 30px;
             outline: none;
-            font-size: 14px;
+            font-size: 13.5px;
             font-family: inherit;
             transition: all 0.2s ease;
             color: white;
             background: #0f1c30;
+            -webkit-appearance: none;
         }
 
         #user-input::placeholder {
@@ -284,16 +295,17 @@
             background: var(--gold-gradient);
             color: #050c18;
             border: none;
-            width: 44px;
-            height: 44px;
+            width: 38px;
+            height: 38px;
             border-radius: 50%;
-            margin-left: 10px;
+            margin-left: 8px;
             cursor: pointer;
             display: flex;
             justify-content: center;
             align-items: center;
-            box-shadow: 0 4px 12px rgba(212, 175, 55, 0.25);
+            box-shadow: 0 4px 10px rgba(212, 175, 55, 0.25);
             transition: all 0.2s ease;
+            flex-shrink: 0;
         }
 
         #send-btn:hover {
@@ -303,8 +315,8 @@
         }
 
         #send-btn svg {
-            width: 18px;
-            height: 18px;
+            width: 16px;
+            height: 16px;
             fill: none;
             stroke: currentColor;
             stroke-width: 2.5;
@@ -314,16 +326,72 @@
             margin-right: 2px;
         }
 
-        /* Estilo responsivo para teléfonos */
+        /* 📱 DISEÑO RESPONSIVO ULTRA AJUSTADO PARA MÓVILES */
+        @media (max-width: 768px) {
+            #chat-container {
+                width: 95%;
+                height: 88vh;
+                border-radius: 20px;
+            }
+        }
+
         @media (max-width: 480px) {
             body {
                 background: #020617;
+                align-items: stretch;
             }
             #chat-container {
                 width: 100%;
-                height: 100vh;
+                height: 100%;
+                height: 100dvh; /* Evita que el teclado de Android/iOS corte la pantalla */
                 border-radius: 0;
                 border: none;
+                max-width: none;
+            }
+            #header {
+                padding: 12px 16px;
+                border-bottom-width: 1.5px;
+            }
+            .bot-logo {
+                width: 34px;
+                height: 34px;
+                padding: 4px;
+            }
+            .header-title {
+                font-size: 14px;
+            }
+            .status-container {
+                font-size: 10px;
+                padding: 2px 8px;
+            }
+            #messages {
+                padding: 16px;
+                gap: 12px;
+            }
+            .msg {
+                padding: 9px 14px;
+                font-size: 13px;
+                max-width: 90%;
+            }
+            #suggestions-panel {
+                padding: 0 12px 8px 12px;
+                gap: 6px;
+            }
+            .suggestion-chip {
+                padding: 5px 10px;
+                font-size: 11px;
+            }
+            #input-area {
+                padding: 10px 12px;
+            }
+            #user-input {
+                padding: 8px 14px;
+                font-size: 13px;
+            }
+            #send-btn {
+                width: 34px;
+                height: 34px;
+                margin-left: 6px;
             }
         }
     </style>
@@ -333,10 +401,29 @@
         <!-- Cabecera Premium -->
         <div id="header">
             <div class="header-info">
-                <div class="bot-avatar">🤖</div>
+                <!-- Escudo de engranaje institucional (TecNM/ITA) en formato SVG Premium -->
+                <div class="bot-logo">
+                    <svg viewBox="0 0 100 100" style="width: 100%; height: 100%;">
+                        <circle cx="50" cy="50" r="44" fill="none" stroke="var(--gold-accent)" stroke-width="4"/>
+                        <!-- Dientes de engranaje -->
+                        <g stroke="var(--gold-accent)" stroke-width="6" stroke-linecap="round">
+                            <line x1="50" y1="6" x2="50" y2="18"/>
+                            <line x1="50" y1="82" x2="50" y2="94"/>
+                            <line x1="6" y1="50" x2="18" y2="50"/>
+                            <line x1="82" y1="50" x2="94" y2="50"/>
+                            <line x1="19" y1="19" x2="28" y2="28"/>
+                            <line x1="72" y1="72" x2="81" y2="81"/>
+                            <line x1="19" y1="81" x2="28" y2="72"/>
+                            <line x1="72" y1="28" x2="81" y2="19"/>
+                        </g>
+                        <!-- Círculo interior dorado -->
+                        <circle cx="50" cy="50" r="28" fill="none" stroke="var(--gold-accent)" stroke-width="3"/>
+                        <circle cx="50" cy="50" r="14" fill="var(--gold-accent)"/>
+                    </svg>
+                </div>
                 <div>
                     <div class="header-title">Asistente Universitario ITA</div>
-                    <div style="font-size: 11px; opacity: 0.85;">Cloud Service</div>
+                    <div style="font-size: 10px; opacity: 0.85;">Cloud Service</div>
                 </div>
             </div>
             <div class="status-container">
@@ -387,7 +474,7 @@
             // Convertir negritas **texto** a <strong>texto</strong>
             let formatted = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
             // Convertir enlaces [texto](url) a <a href="url" target="_blank" style="color: var(--gold-accent); text-decoration: underline; font-weight: 500;">texto</a>
-            formatted = formatted.replace(/\[(.*?)\]\((.*?)\)/g, '<a href="$2" target="_blank" style="color: var(--gold-accent); text-decoration: underline; font-weight: 500;">$1</a>');
+            formatted = formatted.replace(/\[(.*?)\]\((.*?)\)/g, '<a href="$2" target="_blank" style="color: var(--gold-accent); text-decoration: underline; font-weight: 500;">texto</a>');
             // Convertir saltos de línea a <br> para mejorar la lectura
             formatted = formatted.replace(/\n/g, '<br>');
             return formatted;
