@@ -24,12 +24,10 @@ def cargar_conocimiento():
         base_conocimiento = []
         for categoria, subcategorias in datos_json.items():
             for subcategoria, respuesta in subcategorias.items():
-                # Generamos las claves de búsqueda
                 claves = [limpiar_texto(subcategoria)]
                 if subcategoria == "general":
                     claves.append(limpiar_texto(categoria))
                 else:
-                    # Incluimos la categoría en la clave para mayor precisión
                     claves.append(limpiar_texto(f"{categoria} {subcategoria}"))
 
                 base_conocimiento.append({
@@ -39,9 +37,9 @@ def cargar_conocimiento():
                     "claves_busqueda": claves,
                     "respuesta": respuesta
                 })
-        print("Pipeline de conocimiento cargado correctamente con respuestas maestras.")
+        print("Pipeline actualizado: Precisión mejorada.")
     except Exception as e:
-        print(f"Error al cargar conocimiento.json: {e}", file=sys.stderr)
+        print(f"Error: {e}", file=sys.stderr)
 
 cargar_conocimiento()
 
@@ -53,55 +51,45 @@ def index():
 def get_response():
     if not base_conocimiento: cargar_conocimiento()
     
-    mensaje_usuario_original = request.json.get("message", "")
-    user_msg = limpiar_texto(mensaje_usuario_original)
+    msg_raw = request.json.get("message", "")
+    user_msg = limpiar_texto(msg_raw)
+    palabras_usuario = msg_raw.split()
     
-    # Manejo de cortesías básicas
-    cortesias = {
-        "hola": "¡Hola! Soy tu asistente virtual del ITA. ¿En qué trámite puedo ayudarte hoy?",
-        "gracias": "¡De nada! Espero haberte ayudado. Mucho éxito en tu semestre.",
-        "adios": "¡Hasta luego! Recuerda consultar el SIIAU para tus trámites."
-    }
-    
-    if user_msg in cortesias:
-        return jsonify({"response": cortesias[user_msg]})
+    # Cortesías
+    cortesias = {"hola": "¡Hola! Soy tu asistente del ITA.", "gracias": "¡De nada!", "adios": "¡Suerte!"}
+    if user_msg in cortesias: return jsonify({"response": cortesias[user_msg]})
 
-    # Proceso de búsqueda en el pipeline
     resultados = []
     for item in base_conocimiento:
-        mejor_score_item = 0
+        max_score = 0
         for clave in item["claves_busqueda"]:
-            # Usamos token_set_ratio para manejar frases fuera de orden
             score = fuzz.token_set_ratio(user_msg, clave)
             
-            # Bonificación de prioridad: si la pregunta coincide exactamente con la categoría principal
-            if user_msg == clave and item["es_general"]:
-                score += 15
-                
-            if score > mejor_score_item:
-                mejor_score_item = score
-        
-        resultados.append({"item": item, "score": mejor_score_item})
+            # CRÍTICO: Solo dar bonus si la pregunta es CORTA (Intención de rama)
+            if len(palabras_usuario) <= 2 and user_msg == clave and item["es_general"]:
+                score += 20
+            
+            if score > max_score: max_score = score
+        resultados.append({"item": item, "score": max_score})
 
-    # Ordenamos por los mejores resultados
     resultados.sort(key=lambda x: x["score"], reverse=True)
 
-    # Lógica de respuesta basada en umbral
     if not resultados or resultados[0]["score"] < 50:
-        respuesta = "Lo siento, no tengo información exacta sobre eso. Intenta preguntando por temas generales como 'Servicio Social', 'Inscripciones' o 'Residencias'."
+        respuesta = "No entiendo. Prueba con algo como 'Requisitos de inscripción' o 'Servicio Social'."
     else:
-        # Selección del mejor resultado (con desempate para respuestas maestras)
-        mejor_opcion = resultados[0]
+        # Si la pregunta es LARGA, ignoramos el desempate hacia lo general
+        if len(palabras_usuario) > 2:
+            mejor_opcion = resultados[0]
+        else:
+            # Si es corta, el desempate ayuda a la respuesta Maestra
+            mejor_opcion = resultados[0]
+            if len(resultados) > 1 and resultados[1]["item"]["es_general"]:
+                if (resultados[0]["score"] - resultados[1]["score"]) < 15:
+                    mejor_opcion = resultados[1]
         
-        if len(resultados) > 1 and resultados[1]["item"]["es_general"]:
-            # Si el puntaje es casi el mismo, preferimos la respuesta general
-            if (resultados[0]["score"] - resultados[1]["score"]) < 10:
-                mejor_opcion = resultados[1]
-                
         respuesta = mejor_opcion["item"]["respuesta"]
 
     return jsonify({"response": respuesta})
 
 if __name__ == '__main__':
-    # El puerto lo maneja Azure automáticamente, pero dejamos el inicio estándar
     app.run()
