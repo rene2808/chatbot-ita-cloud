@@ -81,7 +81,7 @@ def get_response():
     mensaje_original = request.json.get("message", "")
     user_msg = limpiar_texto(mensaje_original)
     
-    # 🌟 Manejar cortesías al instante para ahorrar procesamiento y sonar natural
+    # Manejar cortesías al instante
     cortesias = {
         "hola": "¡Hola! Soy tu asistente virtual del ITA. ¿Sobre qué trámite escolar tienes alguna duda hoy?",
         "gracias": "¡De nada! Estoy aquí en la nube para ayudarte en lo que necesites. Éxito en tus trámites.",
@@ -89,7 +89,7 @@ def get_response():
         "buenos dias": "¡Buenos días! Soy tu asistente virtual. ¿En qué te puedo asesorar hoy?",
         "buenas tardes": "¡Buenas tardes! ¿En qué trámite del ITA te puedo apoyar hoy?",
         "buenas noches": "¡Buenas noches! ¿Qué duda escolar tienes hoy?",
-        "ayuda": "Pregúntame sobre: Inscripción, Servicio Social, Residencias, Becas, CENEVAL o Titulación."
+        "ayuda": "Pregúntame sobre: Inscripción, Servicio Social, Becas, CENEVAL o Titulación."
     }
     
     msg_key = user_msg.strip()
@@ -101,14 +101,12 @@ def get_response():
     for item in base_conocimiento:
         mejor_score = 0
         for clave in item["claves_busqueda"]:
-            # Usamos token_set_ratio ya que es sumamente potente para intenciones desordenadas
             score = fuzz.token_set_ratio(user_msg, clave)
             
-            # --- AJUSTE DE PRECISIÓN CRÍTICO ---
-            # Si el usuario escribió palabras clave específicas (como 'requisitos', 'calificacion', 'costo')
-            # y coinciden con la subcategoría, le damos un bono para que supere a la 'general'.
-            if not item["es_general"] and limpiar_texto(item["subcategoria"]) in user_msg:
-                score += 15
+            # --- AJUSTE DE PRIORIDAD PARA EL IMSS ---
+            # Si el usuario menciona 'seguro' o 'imss', y el item es de la categoría Seguro Facultativo, subimos puntos
+            if ("seguro" in user_msg or "imss" in user_msg) and "seguro" in item["categoria"].lower():
+                score += 10
             
             if score > mejor_score:
                 mejor_score = score
@@ -123,39 +121,24 @@ def get_response():
     
     # Umbral de confianza mínimo
     umbral_minimo = 55
-    margin = 5  # Margen de tolerancia para detectar ambigüedad
+    margin = 2 # MARGEN MÍNIMO para que casi nunca haya empates
     
     if not candidatos or candidatos[0]["score"] < umbral_minimo:
         # 📝 REGISTRO DE ANALÍTICA (Azure logs)
-        print(f"[ANALITICA - DUDA NO RESUELTA] Entrada original: '{mensaje_original}' | Limpio: '{user_msg}' | Puntuación Max: {candidatos[0]['score'] if candidatos else 0}", file=sys.stdout)
-        
-        return jsonify({"response": "No estoy seguro de entender tu duda. ¿Te refieres a inscripciones, residencias, servicio social o algún trámite escolar?"})
+        print(f"[ANALITICA - DUDA NO RESUELTA] Entrada original: '{mensaje_original}'", file=sys.stdout)
+        return jsonify({"response": "No estoy seguro de entender tu duda. ¿Te refieres a inscripciones, servicio social o seguro médico?"})
 
-    # 🌟 LÓGICA DE DESEMPATE FINAL
-    # Si la respuesta general y la específica están muy cerca, preferimos la específica si el usuario escribió más de 2 palabras.
+    # 🌟 LÓGICA DE DECISIÓN CRÍTICA (Eliminamos el bloqueo por ambigüedad)
     seleccionado = candidatos[0]
-    num_palabras = len(mensaje_original.split())
     
-    if seleccionado["item"]["es_general"] and num_palabras > 2:
-        for cand in candidatos[1:5]:
-            if not cand["item"]["es_general"] and cand["score"] > (seleccionado["score"] - 10):
-                seleccionado = cand
-                break
+    # Si hay un empate técnico, priorizamos la categoría que el usuario mencionó literalmente
+    for cand in candidatos[:3]:
+        if cand["item"]["categoria"].lower() in user_msg:
+            seleccionado = cand
+            break
 
-    # 🌟 LÓGICA DE DESAMBIGUACIÓN (Ties Detection)
-    max_score = seleccionado["score"]
-    empates = [c for c in candidatos if c["score"] >= max_score - margin and c["score"] >= 70]
-    categorias_candidatas = list(set(c["item"]["categoria"] for c in empates))
-    
-    if len(categorias_candidatas) > 1 and num_palabras > 3:
-        opciones = ", ".join(f"**{cat.title()}**" for cat in categorias_candidatas)
-        respuesta = (
-            f"Encontré información que coincide con tu duda en varias secciones: {opciones}. "
-            "¿Podrías especificar un poco más tu pregunta? "
-            f"Por ejemplo, puedes intentar preguntar sobre '{empates[0]['item']['categoria']} {empates[0]['item']['subcategoria']}'."
-        )
-    else:
-        respuesta = seleccionado["item"]["respuesta"]
+    # Respondemos con el mejor resultado directamente para evitar el mensaje de "Encontré en varias secciones"
+    respuesta = seleccionado["item"]["respuesta"]
 
     return jsonify({"response": respuesta})
 
