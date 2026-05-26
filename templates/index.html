@@ -384,8 +384,13 @@
         }
 
         function formatMessage(text) {
-            // Conversor súper simple y liviano de negritas estilo markdown (**texto**) a HTML
-            return text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+            // Convertir negritas **texto** a <strong>texto</strong>
+            let formatted = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+            // Convertir enlaces [texto](url) a <a href="url" target="_blank" style="color: var(--gold-accent); text-decoration: underline; font-weight: 500;">texto</a>
+            formatted = formatted.replace(/\[(.*?)\]\((.*?)\)/g, '<a href="$2" target="_blank" style="color: var(--gold-accent); text-decoration: underline; font-weight: 500;">$1</a>');
+            // Convertir saltos de línea a <br> para mejorar la lectura
+            formatted = formatted.replace(/\n/g, '<br>');
+            return formatted;
         }
 
         function send() {
