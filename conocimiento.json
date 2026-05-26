@@ -1,5 +1,6 @@
 {
   "servicio social": {
+    "general": "El servicio social requiere el 70% de créditos, dura 500 horas (mínimo 6 meses) y es obligatorio para residencias. Puedes hacerlo en dependencias como el IMSS o el COBACH 33.",
     "requisitos": "70% de créditos, plática de inducción, no tener materias reprobadas en el semestre anterior.",
     "duracion": "Mínimo 6 meses (500 horas), máximo 2 años.",
     "cobach": "Para el COBACH 33 en Tres Palos, verifica que el convenio esté firmado en Vinculación.",
@@ -10,6 +11,7 @@
     "solicitud": "Puedes descargar la **Solicitud de Servicio Social** y el **Plan de Trabajo** oficial desde el [Portal de Trámites del ITA](https://ita.edu.mx/vinculacion/servicio-social)."
   },
   "residencias": {
+    "general": "Las residencias profesionales requieren 80% de créditos e Inglés liberado. Consisten en un proyecto profesional con asesor interno y externo.",
     "requisitos": "80% de créditos, Servicio Social liberado, Actividades Complementarias liberadas e Inglés acreditado.",
     "anteproyecto": "Debe ser entregado a la División de Estudios Profesionales antes del cierre de semestre.",
     "asesor": "Debes tener un asesor interno (maestro del ITA) y uno externo (jefe en la empresa).",
@@ -18,6 +20,7 @@
     "formatos": "Los formatos oficiales de anteproyecto, carta de aceptación y reportes los descargas en el [Portal de Residencias del ITA](https://ita.edu.mx/academico/residencias-profesionales)."
   },
   "titulacion": {
+    "general": "Para titularte necesitas Inglés liberado. Opciones: Informe de Residencia, Tesis, CENEVAL (EGEL) o Promedio (90 sin reprobadas).",
     "ceneval": "Debes obtener testimonio satisfactorio o sobresaliente en el EGEL de Ingeniería.",
     "promedio": "Mínimo 90 de promedio general sin haber reprobado ninguna materia en el transcurso de la carrera.",
     "ingles": "Liberación de nivel A2 o B1 según el año de ingreso. Es obligatorio para el título.",
@@ -26,6 +29,7 @@
     "costo": "El costo del trámite del título y cédula profesional varía. Consulta el arancel vigente y descarga tu referencia de pago en la [Oficina Virtual de Cobros del TecNM](https://www.tecnm.mx/estudiantes/aranceles)."
   },
   "inscripcion": {
+    "general": "El turno de reinscripción se asigna por promedio en el SIIAU. No debes tener adeudos y es obligatorio hacer la evaluación docente.",
     "horario": "Tu turno en el SIIAU se asigna según tu promedio del semestre anterior.",
     "evaluacion": "Si no haces la Evaluación Docente, el sistema te bloquea la reinscripción.",
     "adeudos": "No puedes inscribirte si tienes adeudos de libros en biblioteca o material en laboratorios.",
@@ -39,12 +43,14 @@
     "dictamen": "Si el comité te niega la carga, causas baja definitiva sin derecho a reingreso."
   },
   "actividades complementarias": {
+    "general": "Son 5 créditos obligatorios de formación integral (Deportes, Cultura, Tutorías) necesarios para residencias.",
     "total": "Son 5 créditos obligatorios para poder cursar residencias profesionales.",
     "deportes": "Fútbol, Básquetbol, Voleibol y Atletismo valen 1 crédito por semestre.",
     "cultura": "Danza, Música y Teatro son opciones en el edificio de Extraescolares.",
     "tutorias": "La asistencia a tutorías grupales es obligatoria y suma créditos complementarios."
   },
   "inscripcion y pagos": {
+    "general": "Genera tu referencia en el SIIAU y paga 48h antes de tu turno. El pago incluye el seguro escolar.",
     "costo": "El costo de la reinscripción varía cada semestre; consulta el monto exacto en tu referencia bancaria del SIIAU.",
     "referencia": "La referencia de pago se genera en el SIIAU. Debes imprimirla y pagarla en el banco indicado (normalmente Banamex o Santander).",
     "fecha limite": "El pago debe realizarse al menos 48 horas antes de tu turno de inscripción para que el sistema lo valide.",
@@ -57,6 +63,7 @@
     "jefatura": "La oficina del jefe de departamento de Sistemas está en la planta alta del edificio de computo."
   },
   "tramites de escolares": {
+    "general": "Ventanilla única para constancias, boletas, credenciales y bajas temporales o definitivas.",
     "constancia": "Para una constancia con calificaciones, solicítala en la ventanilla de Servicios Escolares con tu comprobante de pago.",
     "boleta": "Las boletas de calificación se descargan directamente del SIIAU al finalizar el periodo de evaluación.",
     "baja temporal": "Puedes solicitar la baja temporal antes de que termine la segunda semana de clases sin que afecte tu historial.",
@@ -76,6 +83,7 @@
     "limpieza": "En laboratorios es obligatorio el uso de bata (química/bio) y no se permiten alimentos ni bebidas."
   },
   "seguro facultativo imss": {
+    "general": "Tramita tu NSS en línea y entrégalo en Escolares para activar tu vigencia médica.",
     "tramite": "Debes darte de alta en la página del IMSS para obtener tu NSS y luego entregar la constancia en Servicios Escolares.",
     "vigencia": "El seguro es válido mientras seas alumno activo. Si te das de baja, el seguro se suspende.",
     "emergencias": "En caso de accidente en el tecnológico, acude primero al área médica de la institución.",
