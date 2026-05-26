@@ -50,6 +50,14 @@
     "cultura": "Danza, Música y Teatro son opciones en el edificio de Extraescolares.",
     "tutorias": "La asistencia a tutorías grupales es obligatoria y suma créditos complementarios."
   },
+  "inscripcion y pagos": {
+    "general": "Genera tu referencia en el SIIAU y paga 48h antes de tu turno. El pago incluye el seguro escolar.",
+    "costo": "El costo de la reinscripción varía cada semestre; consulta el monto exacto en tu referencia bancaria del SIIAU.",
+    "referencia": "La referencia de pago se genera en el SIIAU. Debes imprimirla y pagarla en el banco indicado (normalmente Banamex o Santander).",
+    "fecha limite": "El pago debe realizarse al menos 48 horas antes de tu turno de inscripción para que el sistema lo valide.",
+    "seguro": "El pago de la cuota semestral incluye el seguro escolar contra accidentes dentro de la institución.",
+    "calendario": "Consulta las fechas clave de inscripciones, inicio de clases y días feriados en el [Calendario Escolar Oficial del TecNM](https://ita.edu.mx/calendario-escolar)."
+  },
   "departamento de sistemas": {
     "general": "El departamento de Sistemas e Informática coordina las carreras de ingeniería. Su oficina principal está en el edificio de cómputo y gestiona laboratorios especializados.",
     "ubicacion": "El edificio de Sistemas e Informática se encuentra cerca de la entrada principal, frente al edificio de gestión tecnológica.",
