@@ -37,7 +37,7 @@ def cargar_conocimiento():
                     "claves_busqueda": claves,
                     "respuesta": respuesta
                 })
-        print("Pipeline actualizado: Precisión mejorada.")
+        print("Pipeline de precisión cargado.")
     except Exception as e:
         print(f"Error: {e}", file=sys.stderr)
 
@@ -53,43 +53,41 @@ def get_response():
     
     msg_raw = request.json.get("message", "")
     user_msg = limpiar_texto(msg_raw)
-    palabras_usuario = msg_raw.split()
     
-    # Cortesías
-    cortesias = {"hola": "¡Hola! Soy tu asistente del ITA.", "gracias": "¡De nada!", "adios": "¡Suerte!"}
+    # Cortesías rápidas
+    cortesias = {"hola": "¡Hola! Soy tu asistente del ITA.", "gracias": "¡De nada!", "adios": "¡Hasta pronto!"}
     if user_msg in cortesias: return jsonify({"response": cortesias[user_msg]})
 
-    resultados = []
+    # Buscamos coincidencias
+    candidatos = []
     for item in base_conocimiento:
-        max_score = 0
+        mejor_score = 0
         for clave in item["claves_busqueda"]:
+            # Usamos ratio normal para mayor precisión en palabras clave
             score = fuzz.token_set_ratio(user_msg, clave)
-            
-            # CRÍTICO: Solo dar bonus si la pregunta es CORTA (Intención de rama)
-            if len(palabras_usuario) <= 2 and user_msg == clave and item["es_general"]:
-                score += 20
-            
-            if score > max_score: max_score = score
-        resultados.append({"item": item, "score": max_score})
+            if score > mejor_score: mejor_score = score
+        candidatos.append({"item": item, "score": mejor_score})
 
-    resultados.sort(key=lambda x: x["score"], reverse=True)
+    # Ordenar por puntaje
+    candidatos.sort(key=lambda x: x["score"], reverse=True)
 
-    if not resultados or resultados[0]["score"] < 50:
-        respuesta = "No entiendo. Prueba con algo como 'Requisitos de inscripción' o 'Servicio Social'."
-    else:
-        # Si la pregunta es LARGA, ignoramos el desempate hacia lo general
-        if len(palabras_usuario) > 2:
-            mejor_opcion = resultados[0]
-        else:
-            # Si es corta, el desempate ayuda a la respuesta Maestra
-            mejor_opcion = resultados[0]
-            if len(resultados) > 1 and resultados[1]["item"]["es_general"]:
-                if (resultados[0]["score"] - resultados[1]["score"]) < 15:
-                    mejor_opcion = resultados[1]
-        
-        respuesta = mejor_opcion["item"]["respuesta"]
+    if not candidatos or candidatos[0]["score"] < 55:
+        return jsonify({"response": "No encontré información exacta. ¿Podrías ser más específico?"})
 
-    return jsonify({"response": respuesta})
+    # LÓGICA DE DECISIÓN CRÍTICA
+    # Si la mejor opción es 'general', pero la segunda opción tiene un score alto (>70) 
+    # y NO es general, significa que el usuario preguntó algo específico.
+    
+    seleccionado = candidatos[0]
+    
+    if seleccionado["item"]["es_general"]:
+        # Revisamos si entre los primeros 5 hay algo específico que coincida bien
+        for i in range(1, min(5, len(candidatos))):
+            if candidatos[i]["score"] > 70 and not candidatos[i]["item"]["es_general"]:
+                seleccionado = candidatos[i]
+                break
+
+    return jsonify({"response": seleccionado["item"]["respuesta"]})
 
 if __name__ == '__main__':
     app.run()
