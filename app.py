@@ -104,10 +104,11 @@ def get_response():
             # Usamos token_set_ratio ya que es sumamente potente para intenciones desordenadas
             score = fuzz.token_set_ratio(user_msg, clave)
             
-            # --- AJUSTE DE PRECISIÓN PARA DESEMPATAR ---
-            # Si el usuario menciona la categoría específica, damos prioridad real
-            if limpiar_texto(item["categoria"]) in user_msg:
-                score += 10
+            # --- AJUSTE DE PRECISIÓN CRÍTICO ---
+            # Si el usuario escribió palabras clave específicas (como 'requisitos', 'calificacion', 'costo')
+            # y coinciden con la subcategoría, le damos un bono para que supere a la 'general'.
+            if not item["es_general"] and limpiar_texto(item["subcategoria"]) in user_msg:
+                score += 15
             
             if score > mejor_score:
                 mejor_score = score
@@ -122,7 +123,7 @@ def get_response():
     
     # Umbral de confianza mínimo
     umbral_minimo = 55
-    margin = 2  # Reducimos el margen para evitar ambigüedades innecesarias
+    margin = 5  # Margen de tolerancia para detectar ambigüedad
     
     if not candidatos or candidatos[0]["score"] < umbral_minimo:
         # 📝 REGISTRO DE ANALÍTICA (Azure logs)
@@ -130,24 +131,23 @@ def get_response():
         
         return jsonify({"response": "No estoy seguro de entender tu duda. ¿Te refieres a inscripciones, residencias, servicio social o algún trámite escolar?"})
 
-    # 🌟 LÓGICA DE DECISIÓN CRÍTICA
+    # 🌟 LÓGICA DE DESEMPATE FINAL
+    # Si la respuesta general y la específica están muy cerca, preferimos la específica si el usuario escribió más de 2 palabras.
     seleccionado = candidatos[0]
+    num_palabras = len(mensaje_original.split())
     
-    # Si detectamos que el usuario escribió el nombre de la categoría, lo forzamos
-    for cand in candidatos[:5]:
-        if limpiar_texto(cand["item"]["categoria"]) in user_msg and cand["score"] > 70:
-            seleccionado = cand
-            break
+    if seleccionado["item"]["es_general"] and num_palabras > 2:
+        for cand in candidatos[1:5]:
+            if not cand["item"]["es_general"] and cand["score"] > (seleccionado["score"] - 10):
+                seleccionado = cand
+                break
 
     # 🌟 LÓGICA DE DESAMBIGUACIÓN (Ties Detection)
     max_score = seleccionado["score"]
     empates = [c for c in candidatos if c["score"] >= max_score - margin and c["score"] >= 70]
     categorias_candidatas = list(set(c["item"]["categoria"] for c in empates))
     
-    # Solo disparamos ambigüedad si realmente no hay una categoría clara mencionada
-    menciona_categoria = any(limpiar_texto(cat) in user_msg for cat in categorias_candidatas)
-
-    if len(categorias_candidatas) > 1 and not menciona_categoria:
+    if len(categorias_candidatas) > 1 and num_palabras > 3:
         opciones = ", ".join(f"**{cat.title()}**" for cat in categorias_candidatas)
         respuesta = (
             f"Encontré información que coincide con tu duda en varias secciones: {opciones}. "
