@@ -10,15 +10,7 @@
     "pago": "El trámite de servicio social no tiene costo administrativo en el ITA.",
     "solicitud": "Puedes descargar la **Solicitud de Servicio Social** y el **Plan de Trabajo** oficial desde el [Portal de Trámites del ITA](https://ita.edu.mx/vinculacion/servicio-social)."
   },
-  "residencias": {
-    "general": "Las Residencias Profesionales se cursan al tener el 80% de créditos e Inglés liberado. Consisten en un proyecto de 4 a 6 meses en una empresa con un asesor interno y uno externo.",
-    "requisitos": "80% de créditos, Servicio Social liberado, Actividades Complementarias liberadas e Inglés acreditado.",
-    "anteproyecto": "Debe ser entregado a la División de Estudios Profesionales antes del cierre de semestre.",
-    "asesor": "Debes tener un asesor interno (maestro del ITA) y uno externo (jefe en la empresa).",
-    "calificacion": "La calificación mínima aprobatoria de la residencia es 70.",
-    "dictamen": "El dictamen de aprobación lo emite la academia de tu carrera (ej. Sistemas).",
-    "formatos": "Los formatos oficiales de anteproyecto, carta de aceptación y reportes los descargas en el [Portal de Residencias del ITA](https://ita.edu.mx/academico/residencias-profesionales)."
-  },
+ 
   "titulacion": {
     "general": "Para titularte en el ITA debes liberar el Inglés y elegir una opción: Informe de Residencia, Tesis, CENEVAL (EGEL) o Promedio (mínimo 90 sin materias reprobadas).",
     "ceneval": "Debes obtener testimonio satisfactorio o sobresaliente en el EGEL de Ingeniería.",
