@@ -10,14 +10,16 @@
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary: #4f46e5;
-            --primary-hover: #4338ca;
-            --primary-gradient: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
-            --background-gradient: linear-gradient(135deg, #e0e7ff 0%, #f3f4f6 100%);
-            --chat-bg: rgba(255, 255, 255, 0.85);
-            --border-color: rgba(224, 231, 255, 0.5);
-            --text-dark: #1f2937;
-            --text-muted: #6b7280;
+            --primary: #002855; /* Azul marino institucional */
+            --primary-hover: #001835;
+            --primary-gradient: linear-gradient(135deg, #0b2f61 0%, #001835 100%);
+            --background-gradient: linear-gradient(135deg, #020617 0%, #08162b 50%, #0f1d33 100%);
+            --chat-bg: rgba(10, 22, 41, 0.85); /* Translúcido azul marino */
+            --border-color: rgba(212, 175, 55, 0.25); /* Dorado translúcido */
+            --text-light: #f8fafc;
+            --text-muted: #94a3b8;
+            --gold-accent: #d4af37; /* Oro institucional */
+            --gold-gradient: linear-gradient(135deg, #f59e0b 0%, #d4af37 100%);
         }
 
         body {
@@ -29,6 +31,7 @@
             height: 100vh;
             margin: 0;
             overflow: hidden;
+            color: var(--text-light);
         }
 
         #chat-container {
@@ -36,9 +39,9 @@
             max-width: 440px;
             height: 85vh;
             background: var(--chat-bg);
-            backdrop-filter: blur(16px) saturate(180%);
-            -webkit-backdrop-filter: blur(16px) saturate(180%);
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
+            backdrop-filter: blur(20px) saturate(180%);
+            -webkit-backdrop-filter: blur(20px) saturate(180%);
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.4);
             display: flex;
             flex-direction: column;
             border-radius: 24px;
@@ -54,8 +57,9 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            box-shadow: 0 4px 15px rgba(79, 70, 229, 0.25);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.35);
             z-index: 10;
+            border-bottom: 2px solid var(--gold-accent);
         }
 
         .header-info {
@@ -67,13 +71,14 @@
         .bot-avatar {
             width: 40px;
             height: 40px;
-            background: rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.1);
             border-radius: 50%;
             display: flex;
             justify-content: center;
             align-items: center;
             font-size: 20px;
-            border: 1px solid rgba(255, 255, 255, 0.3);
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            box-shadow: 0 0 10px rgba(212, 175, 55, 0.15);
         }
 
         .header-title {
@@ -87,10 +92,12 @@
             align-items: center;
             gap: 6px;
             font-size: 12px;
-            background: rgba(255, 255, 255, 0.15);
+            background: rgba(212, 175, 55, 0.15);
             padding: 4px 10px;
             border-radius: 20px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(212, 175, 55, 0.35);
+            color: var(--gold-accent);
+            font-weight: 500;
         }
 
         .status-dot {
@@ -115,11 +122,11 @@
             display: flex;
             flex-direction: column;
             gap: 16px;
-            background-color: rgba(249, 250, 251, 0.4);
+            background-color: rgba(7, 16, 31, 0.45);
             scroll-behavior: smooth;
         }
 
-        /* Ocultar barra de scroll para navegadores webkit */
+        /* Barra de scroll temática dorada */
         #messages::-webkit-scrollbar {
             width: 5px;
         }
@@ -127,7 +134,7 @@
             background: transparent;
         }
         #messages::-webkit-scrollbar-thumb {
-            background: rgba(0, 0, 0, 0.05);
+            background: rgba(212, 175, 55, 0.2);
             border-radius: 10px;
         }
 
@@ -152,23 +159,24 @@
 
         .user {
             align-self: flex-end;
-            background: var(--primary-gradient);
-            color: white;
+            background: var(--gold-gradient);
+            color: #050c18; /* Azul oscuro para máxima legibilidad sobre dorado */
             border-bottom-right-radius: 4px;
-            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.15);
+            box-shadow: 0 4px 12px rgba(212, 175, 55, 0.25);
+            font-weight: 500;
         }
 
         .bot {
             align-self: flex-start;
-            background: white;
-            color: var(--text-dark);
-            border: 1px solid rgba(229, 231, 235, 0.6);
+            background: #112240; /* Azul grisáceo oscuro */
+            color: var(--text-light);
+            border: 1px solid rgba(255, 255, 255, 0.05);
             border-bottom-left-radius: 4px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.02);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
         }
 
         .bot strong {
-            color: var(--primary);
+            color: var(--gold-accent);
             font-weight: 600;
         }
 
@@ -178,23 +186,23 @@
             align-items: center;
             gap: 4px;
             padding: 12px 20px;
-            background: white;
-            border: 1px solid rgba(229, 231, 235, 0.6);
+            background: #112240;
+            border: 1px solid rgba(255, 255, 255, 0.05);
             border-radius: 20px;
             border-bottom-left-radius: 4px;
             width: fit-content;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.02);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
             animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
         }
 
         .typing-bubble span {
             width: 8px;
             height: 8px;
-            background: var(--primary);
+            background: var(--gold-accent);
             border-radius: 50%;
             display: inline-block;
             animation: bounce 1.4s infinite ease-in-out both;
-            opacity: 0.6;
+            opacity: 0.7;
         }
 
         .typing-bubble span:nth-child(1) { animation-delay: -0.32s; }
@@ -207,7 +215,7 @@
 
         /* Chips / Botones rápidos */
         #suggestions-panel {
-            padding: 0 20px 10px 20px;
+            padding: 0 20px 12px 20px;
             display: flex;
             gap: 8px;
             overflow-x: auto;
@@ -219,9 +227,9 @@
         }
 
         .suggestion-chip {
-            background: white;
-            color: var(--primary);
-            border: 1px solid rgba(79, 70, 229, 0.15);
+            background: #0f1c30;
+            color: var(--gold-accent);
+            border: 1px solid rgba(212, 175, 55, 0.3);
             padding: 8px 16px;
             border-radius: 30px;
             font-size: 13px;
@@ -229,36 +237,37 @@
             cursor: pointer;
             white-space: nowrap;
             transition: all 0.2s ease;
-            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.02);
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
         }
 
         .suggestion-chip:hover {
-            background: var(--primary);
-            color: white;
-            border-color: var(--primary);
+            background: var(--gold-gradient);
+            color: #050c18;
+            border-color: var(--gold-accent);
             transform: translateY(-1px);
-            box-shadow: 0 4px 8px rgba(79, 70, 229, 0.15);
+            box-shadow: 0 4px 12px rgba(212, 175, 55, 0.3);
         }
 
         /* Caja de entrada */
         #input-area {
             display: flex;
             padding: 16px 20px;
-            background: white;
-            border-top: 1px solid rgba(229, 231, 235, 0.5);
+            background: #0b1526;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
             align-items: center;
         }
 
         #user-input {
             flex: 1;
             padding: 12px 20px;
-            border: 1px solid rgba(156, 163, 175, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.1);
             border-radius: 30px;
             outline: none;
             font-size: 14px;
             font-family: inherit;
             transition: all 0.2s ease;
-            color: var(--text-dark);
+            color: white;
+            background: #0f1c30;
         }
 
         #user-input::placeholder {
@@ -266,14 +275,14 @@
         }
 
         #user-input:focus {
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
-            background: #fff;
+            border-color: var(--gold-accent);
+            box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.2);
+            background: #112035;
         }
 
         #send-btn {
-            background: var(--primary-gradient);
-            color: white;
+            background: var(--gold-gradient);
+            color: #050c18;
             border: none;
             width: 44px;
             height: 44px;
@@ -283,14 +292,14 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            box-shadow: 0 4px 10px rgba(79, 70, 229, 0.2);
+            box-shadow: 0 4px 12px rgba(212, 175, 55, 0.25);
             transition: all 0.2s ease;
         }
 
         #send-btn:hover {
-            background: var(--primary-hover);
+            background: #f59e0b;
             transform: scale(1.05);
-            box-shadow: 0 6px 12px rgba(79, 70, 229, 0.3);
+            box-shadow: 0 6px 15px rgba(212, 175, 55, 0.4);
         }
 
         #send-btn svg {
@@ -298,7 +307,7 @@
             height: 18px;
             fill: none;
             stroke: currentColor;
-            stroke-width: 2;
+            stroke-width: 2.5;
             stroke-linecap: round;
             stroke-linejoin: round;
             transform: rotate(45deg);
@@ -308,7 +317,7 @@
         /* Estilo responsivo para teléfonos */
         @media (max-width: 480px) {
             body {
-                background: white;
+                background: #020617;
             }
             #chat-container {
                 width: 100%;
