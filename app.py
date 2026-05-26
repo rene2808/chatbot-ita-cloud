@@ -80,8 +80,9 @@ def get_response():
 
     mensaje_original = request.json.get("message", "")
     user_msg = limpiar_texto(mensaje_original)
+    num_palabras = len(mensaje_original.split())
     
-    # Manejar cortesías al instante
+    # 🌟 Manejar cortesías al instante para ahorrar procesamiento y sonar natural
     cortesias = {
         "hola": "¡Hola! Soy tu asistente virtual del ITA. ¿Sobre qué trámite escolar tienes alguna duda hoy?",
         "gracias": "¡De nada! Estoy aquí en la nube para ayudarte en lo que necesites. Éxito en tus trámites.",
@@ -96,18 +97,18 @@ def get_response():
     if msg_key in cortesias:
         return jsonify({"response": cortesias[msg_key]})
     
-    # Calcular coincidencia para cada entrada
+    # Calcular coincidencia para cada entrada en la base de conocimiento
     candidatos = []
     for item in base_conocimiento:
         mejor_score = 0
         for clave in item["claves_busqueda"]:
             score = fuzz.token_set_ratio(user_msg, clave)
             
-            # --- AJUSTE DE PRIORIDAD (Aquí está la solución) ---
-            # Si el usuario escribe exactamente el nombre de la categoría (como "servicio social")
-            # le damos un empujón fuerte a la respuesta GENERAL.
-            if item["es_general"] and user_msg == limpiar_texto(item["categoria"]):
-                score += 20
+            # --- MODIFICACIÓN DE PRECISIÓN ---
+            # Si el usuario escribe 1 o 2 palabras (Intención de botón/rama)
+            # le damos prioridad a la respuesta general.
+            if item["es_general"] and num_palabras <= 2 and user_msg == limpiar_texto(item["categoria"]):
+                score += 25
                 
             if score > mejor_score:
                 mejor_score = score
@@ -117,22 +118,43 @@ def get_response():
             "score": mejor_score
         })
     
+    # Ordenar por puntaje descendente
     candidatos.sort(key=lambda x: x["score"], reverse=True)
     
+    # Umbral de confianza mínimo
     umbral_minimo = 55
-    margin = 5
+    margin = 5  # Margen de tolerancia para detectar ambigüedad
     
     if not candidatos or candidatos[0]["score"] < umbral_minimo:
+        # 📝 REGISTRO DE ANALÍTICA (Azure logs)
+        print(f"[ANALITICA - DUDA NO RESUELTA] Entrada original: '{mensaje_original}' | Limpio: '{user_msg}' | Puntuación Max: {candidatos[0]['score'] if candidatos else 0}", file=sys.stdout)
         return jsonify({"response": "No estoy seguro de entender tu duda. ¿Te refieres a inscripciones, residencias, servicio social o algún trámite escolar?"})
 
-    # Lógica de decisión corregida:
-    # Solo saltamos a una respuesta específica si la pregunta es larga (específica).
-    # Si la pregunta es corta, nos quedamos con la mejor (que ahora será la general).
+    # 🌟 LÓGICA DE DECISIÓN (Priority Filter)
+    # Si la pregunta es larga (>2 palabras), permitimos que lo específico gane.
+    # Si es corta, el bono anterior ya aseguró la respuesta general.
     seleccionado = candidatos[0]
     
-    # Si la mejor opción es general y hay un empate técnico, se queda con la general.
-    # Si la mejor es específica, te da la específica.
-    respuesta = seleccionado["item"]["respuesta"]
+    if seleccionado["item"]["es_general"] and num_palabras > 2:
+        for i in range(1, min(5, len(candidatos))):
+            if candidatos[i]["score"] > 75 and not candidatos[i]["item"]["es_general"]:
+                seleccionado = candidatos[i]
+                break
+
+    # 🌟 LÓGICA DE DESAMBIGUACIÓN (Ties Detection)
+    max_score = seleccionado["score"]
+    empates = [c for c in candidatos if c["score"] >= max_score - margin and c["score"] >= 70]
+    categorias_candidatas = list(set(c["item"]["categoria"] for c in empates))
+    
+    if len(categorias_candidatas) > 1 and num_palabras > 2:
+        opciones = ", ".join(f"**{cat.title()}**" for cat in categorias_candidatas)
+        respuesta = (
+            f"Encontré información en varias secciones: {opciones}. "
+            "¿Podrías especificar tu duda? "
+            f"Por ejemplo: '{empates[0]['item']['categoria']} {empates[0]['item']['subcategoria']}'."
+        )
+    else:
+        respuesta = seleccionado["item"]["respuesta"]
 
     return jsonify({"response": respuesta})
 
