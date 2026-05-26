@@ -29,8 +29,8 @@
     "costo": "El costo del trámite del título y cédula profesional varía. Consulta el arancel vigente y descarga tu referencia de pago en la [Oficina Virtual de Cobros del TecNM](https://www.tecnm.mx/estudiantes/aranceles)."
   },
   "inscripcion": {
-    "general": "El turno de reinscripción se asigna por promedio en el SIIAU. No debes tener adeudos y es obligatorio hacer la evaluación docente.",
-    "horario": "Tu turno en el SIIAU se asigna según tu promedio del semestre anterior.",
+    "general": "El turno de reinscripción se asigna por promedio en el SII. No debes tener adeudos y es obligatorio hacer la evaluación docente.",
+    "horario": "Tu turno en el SII se asigna según tu promedio del semestre anterior.",
     "evaluacion": "Si no haces la Evaluación Docente, el sistema te bloquea la reinscripción.",
     "adeudos": "No puedes inscribirte si tienes adeudos de libros en biblioteca o material en laboratorios.",
     "baja": "La baja temporal debe solicitarse en las primeras dos semanas del semestre.",
