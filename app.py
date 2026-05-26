@@ -10,13 +10,9 @@ app = Flask(__name__)
 def limpiar_texto(texto):
     if not texto:
         return ""
-    # Normalizar texto: eliminar acentos (tildes) y diéresis en español
     texto = unicodedata.normalize('NFKD', texto).encode('ascii', 'ignore').decode('utf-8').lower()
-    
-    # Mantener solo letras, números y espacios
     texto = re.sub(r'[^\w\s]', '', texto)
     
-    # Diccionario de equivalencias para lenguaje estudiantil
     equivalencias = {
         "tec": "tecnologico",
         "it": "instituto",
@@ -24,15 +20,11 @@ def limpiar_texto(texto):
         "pago": "costo dinero referencia",
         "papeles": "documentos requisitos"
     }
-    
-    # Reemplazo seguro usando límites de palabras (\b) para evitar coincidencias parciales
     for corto, largo in equivalencias.items():
         if re.search(rf'\b{corto}\b', texto):
             texto += f" {largo}"
-            
     return texto
 
-# Base de conocimiento cargada en memoria
 base_conocimiento = []
 
 def cargar_conocimiento():
@@ -44,7 +36,6 @@ def cargar_conocimiento():
         base_conocimiento = []
         for categoria, subcategorias in datos_json.items():
             for subcategoria, respuesta in subcategorias.items():
-                # Estructuramos las claves de búsqueda según la lógica de tu pipeline
                 claves = [limpiar_texto(subcategoria)]
                 if subcategoria == "general":
                     claves.append(limpiar_texto(categoria))
@@ -63,7 +54,6 @@ def cargar_conocimiento():
         print(f"Error al cargar conocimiento.json: {e}", file=sys.stderr)
         base_conocimiento = []
 
-# Carga inicial
 cargar_conocimiento()
 
 @app.route('/')
@@ -72,91 +62,54 @@ def index():
 
 @app.route('/get_response', methods=['POST'])
 def get_response():
-    # Recargar la base de datos si por algún motivo está vacía
     if not base_conocimiento:
         cargar_conocimiento()
-        if not base_conocimiento:
-            return jsonify({"response": "Error: La base de datos de conocimiento no pudo ser cargada. Por favor verifica que 'conocimiento.json' exista."})
-
+    
     mensaje_original = request.json.get("message", "")
     user_msg = limpiar_texto(mensaje_original)
-    
-    # 🌟 Manejar cortesías al instante para ahorrar procesamiento y sonar natural
+    palabras = mensaje_original.strip().split() # Contamos palabras originales
+
+    # Cortesías
     cortesias = {
         "hola": "¡Hola! Soy tu asistente virtual del ITA. ¿Sobre qué trámite escolar tienes alguna duda hoy?",
-        "gracias": "¡De nada! Estoy aquí en la nube para ayudarte en lo que necesites. Éxito en tus trámites.",
-        "adios": "¡Hasta luego! Recuerda que puedes volver a consultarme cuando tengas dudas.",
-        "buenos dias": "¡Buenos días! Soy tu asistente virtual. ¿En qué te puedo asesorar hoy?",
-        "buenas tardes": "¡Buenas tardes! ¿En qué trámite del ITA te puedo apoyar hoy?",
-        "buenas noches": "¡Buenas noches! ¿Qué duda escolar tienes hoy?",
-        "ayuda": "Pregúntame sobre: Inscripción, Servicio Social, Residencias, Becas, CENEVAL o Titulación."
+        "gracias": "¡De nada! Éxito en tus trámites.",
+        "adios": "¡Hasta luego!",
+        "ayuda": "Pregúntame sobre: Inscripción, Servicio Social, Residencias, Becas o Titulación."
     }
-    
-    msg_key = user_msg.strip()
-    if msg_key in cortesias:
-        return jsonify({"response": cortesias[msg_key]})
-    
-    # Calcular coincidencia para cada entrada en la base de conocimiento
+    if user_msg in cortesias:
+        return jsonify({"response": cortesias[user_msg]})
+
+    # 1. VIA DE PRIORIDAD EXACTA: Si el usuario pone solo 1 palabra (ej. "Residencias")
+    # Buscamos si coincide con una CATEGORIA General.
+    if len(palabras) == 1:
+        for item in base_conocimiento:
+            if item["es_general"] and user_msg == limpiar_texto(item["categoria"]):
+                return jsonify({"response": item["respuesta"]})
+
+    # 2. BUSQUEDA POR SIMILITUD (PIPELINE NORMAL)
     candidatos = []
     for item in base_conocimiento:
         mejor_score = 0
         for clave in item["claves_busqueda"]:
-            # Usamos token_set_ratio ya que es sumamente potente para intenciones desordenadas
             score = fuzz.token_set_ratio(user_msg, clave)
             if score > mejor_score:
                 mejor_score = score
-        
-        candidatos.append({
-            "item": item,
-            "score": mejor_score
-        })
-    
-    # Ordenar por puntaje descendente
-    candidatos.sort(key=lambda x: x["score"], reverse=True)
-    
-    # Umbral de confianza mínimo
-    umbral_minimo = 55
-    margin = 5  # Margen de tolerancia para detectar ambigüedad
-    
-    if not candidatos or candidatos[0]["score"] < umbral_minimo:
-        # 📝 REGISTRO DE ANALÍTICA (Azure logs): Registra dudas no resueltas para mejorar el JSON
-        print(f"[ANALITICA - DUDA NO RESUELTA] Entrada original: '{mensaje_original}' | Limpio: '{user_msg}' | Puntuación Max: {candidatos[0]['score'] if candidatos else 0}", file=sys.stdout)
-        
-        return jsonify({"response": "No estoy seguro de entender tu duda. ¿Te refieres a inscripciones, residencias, servicio social o algún trámite escolar?"})
+        candidatos.append({"item": item, "score": mejor_score})
 
-    # 🌟 LÓGICA DE DECISIÓN CRÍTICA (Specific Overrides General)
-    # Si la mejor opción es general, pero entre las primeras 5 hay una específica con
-    # puntuación muy alta (> 70), priorizamos la respuesta específica.
+    candidatos.sort(key=lambda x: x["score"], reverse=True)
+
+    if not candidatos or candidatos[0]["score"] < 55:
+        return jsonify({"response": "No estoy seguro de entender tu duda. ¿Te refieres a inscripciones, residencias o servicio social?"})
+
+    # Si es una pregunta de varias palabras, aplicamos la lógica de "específico gana a general"
     seleccionado = candidatos[0]
-    if seleccionado["item"]["es_general"]:
+    if seleccionado["item"]["es_general"] and len(palabras) > 1:
         for i in range(1, min(5, len(candidatos))):
-            if candidatos[i]["score"] > 70 and not candidatos[i]["item"]["es_general"]:
+            if candidatos[i]["score"] > 75 and not candidatos[i]["item"]["es_general"]:
                 seleccionado = candidatos[i]
                 break
 
-    # 🌟 LÓGICA DE DESAMBIGUACIÓN (Ties Detection)
-    # Comparamos si el puntaje máximo tiene empates cercanos con otras categorías distintas
-    max_score = seleccionado["score"]
-    
-    # Filtrar candidatos cercanos al puntaje máximo que pertenezcan a alta confianza (>= 70)
-    empates = [c for c in candidatos if c["score"] >= max_score - margin and c["score"] >= 70]
-    
-    # Agrupar las categorías únicas de los empates
-    categorias_candidatas = list(set(c["item"]["categoria"] for c in empates))
-    
-    if len(categorias_candidatas) > 1:
-        # Ambigüedad detectada: múltiples categorías válidas con puntajes altos similares
-        opciones = ", ".join(f"**{cat.title()}**" for cat in categorias_candidatas)
-        respuesta = (
-            f"Encontré información que coincide con tu duda en varias secciones: {opciones}. "
-            "¿Podrías especificar un poco más tu pregunta? "
-            f"Por ejemplo, puedes intentar preguntar sobre '{empates[0]['item']['categoria']} {empates[0]['item']['subcategoria']}'."
-        )
-    else:
-        # No hay ambigüedad o es una sola categoría, tomamos el mejor resultado seleccionado
-        respuesta = seleccionado["item"]["respuesta"]
-
-    return jsonify({"response": respuesta})
+    return jsonify({"response": seleccionado["item"]["respuesta"]})
 
 if __name__ == '__main__':
     app.run()
