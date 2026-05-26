@@ -1,6 +1,6 @@
 {
   "servicio social": {
-    "general": "El servicio social requiere el 70% de créditos, dura 500 horas (mínimo 6 meses) y es obligatorio para residencias. Puedes hacerlo en dependencias como el IMSS o el COBACH 33.",
+    "general": "El Servicio Social es un requisito de 500 horas (mínimo 6 meses). Necesitas el 70% de créditos y la plática de inducción. Puedes realizarlo en dependencias oficiales, el IMSS o mediante convenios como el COBACH 33.",
     "requisitos": "70% de créditos, plática de inducción, no tener materias reprobadas en el semestre anterior.",
     "duracion": "Mínimo 6 meses (500 horas), máximo 2 años.",
     "cobach": "Para el COBACH 33 en Tres Palos, verifica que el convenio esté firmado en Vinculación.",
@@ -11,7 +11,7 @@
     "solicitud": "Puedes descargar la **Solicitud de Servicio Social** y el **Plan de Trabajo** oficial desde el [Portal de Trámites del ITA](https://ita.edu.mx/vinculacion/servicio-social)."
   },
   "residencias": {
-    "general": "Las residencias profesionales requieren 80% de créditos e Inglés liberado. Consisten en un proyecto profesional con asesor interno y externo.",
+    "general": "Las Residencias Profesionales se cursan al tener el 80% de créditos e Inglés liberado. Consisten en un proyecto de 4 a 6 meses en una empresa con un asesor interno y uno externo.",
     "requisitos": "80% de créditos, Servicio Social liberado, Actividades Complementarias liberadas e Inglés acreditado.",
     "anteproyecto": "Debe ser entregado a la División de Estudios Profesionales antes del cierre de semestre.",
     "asesor": "Debes tener un asesor interno (maestro del ITA) y uno externo (jefe en la empresa).",
@@ -20,7 +20,7 @@
     "formatos": "Los formatos oficiales de anteproyecto, carta de aceptación y reportes los descargas en el [Portal de Residencias del ITA](https://ita.edu.mx/academico/residencias-profesionales)."
   },
   "titulacion": {
-    "general": "Para titularte necesitas Inglés liberado. Opciones: Informe de Residencia, Tesis, CENEVAL (EGEL) o Promedio (90 sin reprobadas).",
+    "general": "Para titularte en el ITA debes liberar el Inglés y elegir una opción: Informe de Residencia, Tesis, CENEVAL (EGEL) o Promedio (mínimo 90 sin materias reprobadas).",
     "ceneval": "Debes obtener testimonio satisfactorio o sobresaliente en el EGEL de Ingeniería.",
     "promedio": "Mínimo 90 de promedio general sin haber reprobado ninguna materia en el transcurso de la carrera.",
     "ingles": "Liberación de nivel A2 o B1 según el año de ingreso. Es obligatorio para el título.",
@@ -29,67 +29,64 @@
     "costo": "El costo del trámite del título y cédula profesional varía. Consulta el arancel vigente y descarga tu referencia de pago en la [Oficina Virtual de Cobros del TecNM](https://www.tecnm.mx/estudiantes/aranceles)."
   },
   "inscripcion": {
-    "general": "El turno de reinscripción se asigna por promedio en el SII. No debes tener adeudos y es obligatorio hacer la evaluación docente.",
-    "horario": "Tu turno en el SII se asigna según tu promedio del semestre anterior.",
+    "general": "La inscripción se realiza por turnos basados en el promedio del semestre anterior. Es obligatorio realizar la evaluación docente, no tener adeudos en biblioteca y pagar la referencia 48 horas antes.",
+    "horario": "Tu turno en el SIIAU se asigna según tu promedio del semestre anterior.",
     "evaluacion": "Si no haces la Evaluación Docente, el sistema te bloquea la reinscripción.",
     "adeudos": "No puedes inscribirte si tienes adeudos de libros en biblioteca o material en laboratorios.",
     "baja": "La baja temporal debe solicitarse en las primeras dos semanas del semestre.",
     "carga": "Mínima 22 créditos, Máxima 36 créditos. Si eres especial, la carga es reducida."
   },
   "situacion especial": {
+    "general": "Los casos especiales (terceras, bajas definitivas o prórrogas) son evaluados por el Comité Académico. El tiempo máximo para terminar la carrera es de 12 semestres.",
     "reprobar": "Si repruebas una materia en curso de repetición (segunda), pasas a curso especial (tercera).",
     "comite": "El Comité Académico analiza casos de bajas definitivas por exceder semestres o reprobar especiales.",
     "semestres": "El tiempo máximo para terminar la carrera es de 12 semestres (6 años).",
     "dictamen": "Si el comité te niega la carga, causas baja definitiva sin derecho a reingreso."
   },
   "actividades complementarias": {
-    "general": "Son 5 créditos obligatorios de formación integral (Deportes, Cultura, Tutorías) necesarios para residencias.",
+    "general": "Debes liberar 5 créditos complementarios (Deportes, Cultura, Tutorías) antes de solicitar residencias profesionales.",
     "total": "Son 5 créditos obligatorios para poder cursar residencias profesionales.",
     "deportes": "Fútbol, Básquetbol, Voleibol y Atletismo valen 1 crédito por semestre.",
     "cultura": "Danza, Música y Teatro son opciones en el edificio de Extraescolares.",
     "tutorias": "La asistencia a tutorías grupales es obligatoria y suma créditos complementarios."
   },
-  "inscripcion y pagos": {
-    "general": "Genera tu referencia en el SIIAU y paga 48h antes de tu turno. El pago incluye el seguro escolar.",
-    "costo": "El costo de la reinscripción varía cada semestre; consulta el monto exacto en tu referencia bancaria del SIIAU.",
-    "referencia": "La referencia de pago se genera en el SIIAU. Debes imprimirla y pagarla en el banco indicado (normalmente Banamex o Santander).",
-    "fecha limite": "El pago debe realizarse al menos 48 horas antes de tu turno de inscripción para que el sistema lo valide.",
-    "seguro": "El pago de la cuota semestral incluye el seguro escolar contra accidentes dentro de la institución.",
-    "calendario": "Consulta las fechas clave de inscripciones, inicio de clases y días feriados en el [Calendario Escolar Oficial del TecNM](https://ita.edu.mx/calendario-escolar)."
-  },
   "departamento de sistemas": {
+    "general": "El departamento de Sistemas e Informática coordina las carreras de ingeniería. Su oficina principal está en el edificio de cómputo y gestiona laboratorios especializados.",
     "ubicacion": "El edificio de Sistemas e Informática se encuentra cerca de la entrada principal, frente al edificio de gestión tecnológica.",
     "laboratorios": "Contamos con laboratorios de redes, bases de datos y desarrollo móvil. El acceso requiere ser estudiante vigente de la carrera.",
     "jefatura": "La oficina del jefe de departamento de Sistemas está en la planta alta del edificio de computo."
   },
+  "biblioteca y laboratorios": {
+    "general": "La biblioteca ofrece servicios de consulta y préstamo de libros. Los laboratorios requieren credencial vigente y seguir las normas de limpieza y seguridad.",
+    "prestamos": "Puedes solicitar libros con tu credencial vigente. El préstamo a domicilio es por 3 días máximo.",
+    "multas": "El retraso en la entrega de libros genera multas diarias que bloquean tu reinscripción.",
+    "internet": "El ITA cuenta con la red Wi-Fi 'TecNM'. Solicita tu clave de acceso en el Centro de Cómputo.",
+    "limpieza": "En laboratorios es obligatorio el uso de bata (química/bio) y no se permiten alimentos ni bebidas."
+  },
+  "actividades extraescolares": {
+    "general": "Son actividades formativas en áreas deportivas, culturales y cívicas que otorgan créditos complementarios necesarios para tu titulación.",
+    "deportivas": "Fútbol, básquetbol, voleibol, atletismo y taekwondo. Se liberan con 1 crédito por semestre.",
+    "culturales": "Danza folclórica, música, teatro y pintura. Se imparten en el edificio de Extraescolares tras la cafetería.",
+    "civicas": "Escolta y Banda de Guerra. Participar en eventos oficiales otorga créditos complementarios.",
+    "ajedrez": "El club de ajedrez sesiona en la biblioteca y cuenta como actividad académica/cultural."
+  },
   "tramites de escolares": {
-    "general": "Ventanilla única para constancias, boletas, credenciales y bajas temporales o definitivas.",
+    "general": "Ventanilla única para gestionar tu vida académica: desde constancias de estudio y boletas hasta bajas temporales y tu credencial oficial.",
     "constancia": "Para una constancia con calificaciones, solicítala en la ventanilla de Servicios Escolares con tu comprobante de pago.",
     "boleta": "Las boletas de calificación se descargan directamente del SIIAU al finalizar el periodo de evaluación.",
     "baja temporal": "Puedes solicitar la baja temporal antes de que termine la segunda semana de clases sin que afecte tu historial.",
     "baja definitiva": "La baja definitiva ocurre tras reprobar un curso especial o exceder los 12 semestres reglamentarios.",
     "credencial": "La toma de foto para la credencial se realiza en el centro de computo en las fechas programadas al inicio de semestre."
   },
-  "actividades extraescolares": {
-    "deportivas": "Fútbol, básquetbol, voleibol, atletismo y taekwondo. Se liberan con 1 crédito por semestre.",
-    "culturales": "Danza folclórica, música, teatro y pintura. Se imparten en el edificio de Extraescolares tras la cafetería.",
-    "civicas": "Escolta y Banda de Guerra. Participar en eventos oficiales otorga créditos complementarios.",
-    "ajedrez": "El club de ajedrez sesiona en la biblioteca y cuenta como actividad académica/cultural."
-  },
-  "biblioteca y laboratorios": {
-    "prestamos": "Puedes solicitar libros con tu credencial vigente. El préstamo a domicilio es por 3 días máximo.",
-    "multas": "El retraso en la entrega de libros genera multas diarias que bloquean tu reinscripción.",
-    "internet": "El ITA cuenta con la red Wi-Fi 'TecNM'. Solicita tu clave de acceso en el Centro de Cómputo.",
-    "limpieza": "En laboratorios es obligatorio el uso de bata (química/bio) y no se permiten alimentos ni bebidas."
-  },
   "seguro facultativo imss": {
-    "general": "Tramita tu NSS en línea y entrégalo en Escolares para activar tu vigencia médica.",
+    "general": "Como estudiante del ITA tienes derecho al seguro médico. Debes tramitar tu Número de Seguridad Social (NSS) en línea y activarlo en la ventanilla de Servicios Escolares.",
     "tramite": "Debes darte de alta en la página del IMSS para obtener tu NSS y luego entregar la constancia en Servicios Escolares.",
     "vigencia": "El seguro es válido mientras seas alumno activo. Si te das de baja, el seguro se suspende.",
     "emergencias": "En caso de accidente en el tecnológico, acude primero al área médica de la institución.",
     "alta": "Para obtener tu **Número de Seguridad Social (NSS)** e iniciar tu vigencia de derechos, realiza el trámite en línea en la [Plataforma IMSS Digital](https://serviciosdigitales.imss.gob.mx/portal-ciudadano-web-externo/derechohabientes/tramite/registro)."
   },
   "comite academico": {
+    "general": "Es el órgano colegiado que evalúa situaciones escolares excepcionales, como solicitudes de carga académica especial o prórrogas de tiempo.",
     "que es": "Es el órgano que decide sobre situaciones especiales, prórrogas de tiempo y casos de indisciplina.",
     "solicitud": "Las cartas al comité se entregan en la División de Estudios Profesionales con el visto bueno de tu coordinador.",
     "respuesta": "El comité sesiona periódicamente y los resultados se notifican vía correo institucional o ventanilla."
