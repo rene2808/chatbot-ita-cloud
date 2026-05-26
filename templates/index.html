@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Asistente Virtual ITA - Cloud Service</title>
+    <!-- Cargamos Google Fonts Outfit -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #4f46e5;
+            --primary-hover: #4338ca;
+            --primary-gradient: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+            --background-gradient: linear-gradient(135deg, #e0e7ff 0%, #f3f4f6 100%);
+            --chat-bg: rgba(255, 255, 255, 0.85);
+            --border-color: rgba(224, 231, 255, 0.5);
+            --text-dark: #1f2937;
+            --text-muted: #6b7280;
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background: var(--background-gradient);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
+        }
+
+        #chat-container {
+            width: 90%;
+            max-width: 440px;
+            height: 85vh;
+            background: var(--chat-bg);
+            backdrop-filter: blur(16px) saturate(180%);
+            -webkit-backdrop-filter: blur(16px) saturate(180%);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
+            display: flex;
+            flex-direction: column;
+            border-radius: 24px;
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+            transition: all 0.3s ease;
+        }
+
+        #header {
+            background: var(--primary-gradient);
+            color: white;
+            padding: 20px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 4px 15px rgba(79, 70, 229, 0.25);
+            z-index: 10;
+        }
+
+        .header-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .bot-avatar {
+            width: 40px;
+            height: 40px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .header-title {
+            font-size: 16px;
+            font-weight: 600;
+            letter-spacing: 0.3px;
+        }
+
+        .status-container {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 12px;
+            background: rgba(255, 255, 255, 0.15);
+            padding: 4px 10px;
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            background-color: #10b981;
+            border-radius: 50%;
+            box-shadow: 0 0 10px #10b981;
+            animation: pulse 1.8s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(0.9); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
+            70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(16, 185, 129, 0); }
+            100% { transform: scale(0.9); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+        }
+
+        #messages {
+            flex: 1;
+            padding: 24px 20px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            background-color: rgba(249, 250, 251, 0.4);
+            scroll-behavior: smooth;
+        }
+
+        /* Ocultar barra de scroll para navegadores webkit */
+        #messages::-webkit-scrollbar {
+            width: 5px;
+        }
+        #messages::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        #messages::-webkit-scrollbar-thumb {
+            background: rgba(0, 0, 0, 0.05);
+            border-radius: 10px;
+        }
+
+        .msg {
+            padding: 12px 18px;
+            border-radius: 20px;
+            max-width: 80%;
+            font-size: 14px;
+            line-height: 1.5;
+            word-wrap: break-word;
+            animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            opacity: 0;
+            transform: translateY(10px);
+        }
+
+        @keyframes slideUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .user {
+            align-self: flex-end;
+            background: var(--primary-gradient);
+            color: white;
+            border-bottom-right-radius: 4px;
+            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.15);
+        }
+
+        .bot {
+            align-self: flex-start;
+            background: white;
+            color: var(--text-dark);
+            border: 1px solid rgba(229, 231, 235, 0.6);
+            border-bottom-left-radius: 4px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.02);
+        }
+
+        .bot strong {
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        /* Burbuja de Escribiendo */
+        .typing-bubble {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            padding: 12px 20px;
+            background: white;
+            border: 1px solid rgba(229, 231, 235, 0.6);
+            border-radius: 20px;
+            border-bottom-left-radius: 4px;
+            width: fit-content;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.02);
+            animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        .typing-bubble span {
+            width: 8px;
+            height: 8px;
+            background: var(--primary);
+            border-radius: 50%;
+            display: inline-block;
+            animation: bounce 1.4s infinite ease-in-out both;
+            opacity: 0.6;
+        }
+
+        .typing-bubble span:nth-child(1) { animation-delay: -0.32s; }
+        .typing-bubble span:nth-child(2) { animation-delay: -0.16s; }
+
+        @keyframes bounce {
+            0%, 80%, 100% { transform: scale(0); }
+            40% { transform: scale(1.0); }
+        }
+
+        /* Chips / Botones rápidos */
+        #suggestions-panel {
+            padding: 0 20px 10px 20px;
+            display: flex;
+            gap: 8px;
+            overflow-x: auto;
+            background: transparent;
+        }
+
+        #suggestions-panel::-webkit-scrollbar {
+            display: none;
+        }
+
+        .suggestion-chip {
+            background: white;
+            color: var(--primary);
+            border: 1px solid rgba(79, 70, 229, 0.15);
+            padding: 8px 16px;
+            border-radius: 30px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: all 0.2s ease;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.02);
+        }
+
+        .suggestion-chip:hover {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(79, 70, 229, 0.15);
+        }
+
+        /* Caja de entrada */
+        #input-area {
+            display: flex;
+            padding: 16px 20px;
+            background: white;
+            border-top: 1px solid rgba(229, 231, 235, 0.5);
+            align-items: center;
+        }
+
+        #user-input {
+            flex: 1;
+            padding: 12px 20px;
+            border: 1px solid rgba(156, 163, 175, 0.4);
+            border-radius: 30px;
+            outline: none;
+            font-size: 14px;
+            font-family: inherit;
+            transition: all 0.2s ease;
+            color: var(--text-dark);
+        }
+
+        #user-input::placeholder {
+            color: var(--text-muted);
+        }
+
+        #user-input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
+            background: #fff;
+        }
+
+        #send-btn {
+            background: var(--primary-gradient);
+            color: white;
+            border: none;
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            margin-left: 10px;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 4px 10px rgba(79, 70, 229, 0.2);
+            transition: all 0.2s ease;
+        }
+
+        #send-btn:hover {
+            background: var(--primary-hover);
+            transform: scale(1.05);
+            box-shadow: 0 6px 12px rgba(79, 70, 229, 0.3);
+        }
+
+        #send-btn svg {
+            width: 18px;
+            height: 18px;
+            fill: none;
+            stroke: currentColor;
+            stroke-width: 2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            transform: rotate(45deg);
+            margin-right: 2px;
+        }
+
+        /* Estilo responsivo para teléfonos */
+        @media (max-width: 480px) {
+            body {
+                background: white;
+            }
+            #chat-container {
+                width: 100%;
+                height: 100vh;
+                border-radius: 0;
+                border: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="chat-container">
+        <!-- Cabecera Premium -->
+        <div id="header">
+            <div class="header-info">
+                <div class="bot-avatar">🤖</div>
+                <div>
+                    <div class="header-title">Asistente Universitario ITA</div>
+                    <div style="font-size: 11px; opacity: 0.85;">Cloud Service</div>
+                </div>
+            </div>
+            <div class="status-container">
+                <div class="status-dot"></div>
+                <span>En línea</span>
+            </div>
+        </div>
+
+        <!-- Área de mensajes -->
+        <div id="messages">
+            <div class="msg bot">¡Bienvenido! Soy tu asistente en la nube. Puedes preguntarme sobre inscripciones, servicio social, residencias o trámites escolares. ¿En qué te ayudo?</div>
+        </div>
+
+        <!-- Panel de sugerencias rápidas (Chips) -->
+        <div id="suggestions-panel">
+            <div class="suggestion-chip" onclick="quickAsk('Servicio Social')">Servicio Social</div>
+            <div class="suggestion-chip" onclick="quickAsk('Residencias')">Residencias</div>
+            <div class="suggestion-chip" onclick="quickAsk('Inscripciones')">Inscripciones</div>
+            <div class="suggestion-chip" onclick="quickAsk('Comité Académico')">Comité</div>
+        </div>
+
+        <!-- Caja de Texto y Botón -->
+        <div id="input-area">
+            <input type="text" id="user-input" placeholder="Escribe tu duda aquí..." onkeypress="handleKey(event)" autocomplete="off">
+            <button id="send-btn" onclick="send()">
+                <svg viewBox="0 0 24 24">
+                    <line x1="22" y1="2" x2="11" y2="13"></line>
+                    <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                </svg>
+            </button>
+        </div>
+    </div>
+
+    <script>
+        const box = document.getElementById('messages');
+        const input = document.getElementById('user-input');
+
+        function handleKey(e) { 
+            if (e.key === 'Enter') send(); 
+        }
+
+        function quickAsk(text) {
+            input.value = text;
+            send();
+        }
+
+        function formatMessage(text) {
+            // Conversor súper simple y liviano de negritas estilo markdown (**texto**) a HTML
+            return text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+        }
+
+        function send() {
+            const text = input.value.trim();
+            if(!text) return;
+            
+            // Agregar mensaje del usuario
+            box.innerHTML += `<div class="msg user">${text}</div>`;
+            input.value = '';
+            box.scrollTop = box.scrollHeight;
+
+            // Mostrar animación de "escribiendo..."
+            const typingId = 'typing_' + Date.now();
+            box.innerHTML += `
+                <div class="typing-bubble" id="${typingId}">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+            `;
+            box.scrollTop = box.scrollHeight;
+
+            fetch('/get_response', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({message: text})
+            })
+            .then(res => res.json())
+            .then(data => {
+                // Eliminar animación de escribiendo
+                const bubble = document.getElementById(typingId);
+                if (bubble) bubble.remove();
+
+                // Agregar respuesta formateada del bot
+                const formattedResponse = formatMessage(data.response);
+                box.innerHTML += `<div class="msg bot">${formattedResponse}</div>`;
+                box.scrollTop = box.scrollHeight;
+            })
+            .catch(() => {
+                const bubble = document.getElementById(typingId);
+                if (bubble) bubble.remove();
+
+                box.innerHTML += `<div class="msg bot">Error de conexión con el servidor Azure. Intenta de nuevo más tarde.</div>`;
+                box.scrollTop = box.scrollHeight;
+            });
+        }
+    </script>
+</body>
+</html>
